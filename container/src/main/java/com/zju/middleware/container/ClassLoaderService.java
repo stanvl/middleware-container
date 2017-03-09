@@ -27,7 +27,7 @@ public class ClassLoaderService {
         moduleClassLoader.setImportPackages(importPackageList);
         moduleClassLoader.setContainerClassLoader(containerClassLoader);
         //sharedClassService：中间件库暴露给业务的api
-        moduleClassLoader.setSharedClassService(sharedClassService);
+        moduleClassLoader.setSharedClassService(SharedClassService.INSTANCE);
         moduleClassLoader.setBizClassLoader(ClassLoaderHolder.getBizLoader());
         moduleClassLoader.setSystemClassLoader(systemClassLoader);
         return moduleClassLoader;
@@ -36,5 +36,4 @@ public class ClassLoaderService {
     private ClassLoader systemClassLoader;
     private ClassLoader extClassLoader;
     private ClassLoader containerClassLoader;
-    private SharedClassService sharedClassService = SharedClassService.INSTANCE;
 }

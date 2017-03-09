@@ -1,5 +1,7 @@
 package com.zju.middleware.container;
 
+import com.zju.middleware.container.util.ConfigFileUtil;
+
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -9,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @date 2017-03-08 15:30
  */
 public class MiddlewareContainer {
-    public MiddlewareContainer(String containerPath, ClassLoader bizClassLoader) {
+    public MiddlewareContainer(ClassLoader bizClassLoader) {
         started = new AtomicBoolean();
         ClassLoaderHolder.setBizLoader(bizClassLoader);
     }
@@ -17,7 +19,7 @@ public class MiddlewareContainer {
     public void start() throws Exception {
         if (started.compareAndSet(false, true)) {
             //部署每个中间件plugin，创建每个中间件的classloader,把每个中间件暴露出的类解析到SharedClassService
-            File pluginRoot = new File(System.getProperty("catalina.base"), "deploy/container.sar/plugins");
+            File pluginRoot = new File(ConfigFileUtil.pluginRoot());
             File[] plugins = pluginRoot.listFiles();
             for (File plugin : plugins) {
                 if (plugin.isDirectory()) {
@@ -32,7 +34,7 @@ public class MiddlewareContainer {
     }
 
     public Map getExportedClasses() {
-        //key：modelClassName,value:modelClass
+        //key：exportClassName,value:exportClass
         return SharedClassService.INSTANCE.getSharedClassMap();
     }
 

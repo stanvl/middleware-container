@@ -8,23 +8,8 @@ import java.util.Map;
  */
 public class MiddlewareDelegateContainer {
 
-    public static void init(String args[]) throws Exception {
-        if (args == null || args.length == 0)
-            path = MiddlewareDelegateContainer.class.getClassLoader().getResource("").getPath();
-        else
-            path = args[0];
-        if (path == null) {
-            throw new Exception("[Middleware-Delegate-Container] Container start error for can not get container path");
-        } else {
-            init = true;
-            return;
-        }
-    }
+    public static void start() throws Exception {
 
-    //args[0]：deploy/container.sar/lib
-    public static void start(String args[]) throws Exception {
-        if (!init)
-            init(args);
     }
 
     public static void stop()
@@ -36,7 +21,7 @@ public class MiddlewareDelegateContainer {
     }
 
     public static Map getExportedClasses() {
-        middlewareContainer = new MiddlewareContainer(path, ClassLoaderHolder.getBizLoader());
+        middlewareContainer = new MiddlewareContainer(ClassLoaderHolder.getBizLoader());
         try {
             middlewareContainer.start();
             return middlewareContainer.getExportedClasses();
@@ -56,7 +41,5 @@ public class MiddlewareDelegateContainer {
         ClassLoaderHolder.setBizLoader(clzLoader);
     }
 
-    private static boolean init;
     private static MiddlewareContainer middlewareContainer;
-    private static String path;
 }

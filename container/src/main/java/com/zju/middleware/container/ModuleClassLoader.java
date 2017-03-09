@@ -28,20 +28,22 @@ public class ModuleClassLoader extends URLClassLoader {
             throws ClassNotFoundException {
         if (StringUtils.isEmpty(name))
             throw new FrameworkException("class name is blank.");
-        //加载中间件的类库
+        //加载中间件及其依赖的类库
         Class clazz = resolveLoaded(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveLoaded", name);
             return clazz;
         }
+        //扩展类和跟加载器加载
         clazz = resolveBootstrap(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveBootstrap", name);
             return clazz;
         }
+        //加载容器类
         clazz = resolveContainerClass(name);
         if (clazz != null) {
-            debugClassLoaded(clazz, "resolvePandoraClass", name);
+            debugClassLoaded(clazz, "resolveContainerClass", name);
             return clazz;
         }
         //中间件暴露出的api类
@@ -61,17 +63,19 @@ public class ModuleClassLoader extends URLClassLoader {
             debugClassLoaded(clazz, "resolveClassPath", name);
             return clazz;
         }
+        //从业务类加载
         clazz = resolveExternal(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveExternal", name);
             return clazz;
         }
+        //从系统类加载器加载，${CATALINA_HOME}/bin
         clazz = resolveSystemClassLoader(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveSystemClassLoader", name);
             if (resolve) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Module-Loader", "{} resolve class: {}", new Object[]{
+                    logger.debug("Module-Loader {} resolve class: {}", new Object[]{
                             moduleName, name
                     });
                 resolveClass(clazz);
@@ -120,7 +124,7 @@ public class ModuleClassLoader extends URLClassLoader {
             throws FrameworkException {
         if (importPackages != null && bizClassLoader != null) {
             debugClassLoading("resolveImport", name);
-            for (String packageName : importPackages){
+            for (String packageName : importPackages) {
                 if (StringUtils.isNotEmpty(packageName) && name.startsWith(packageName))
                     try {
                         return bizClassLoader.loadClass(name);
@@ -226,7 +230,7 @@ public class ModuleClassLoader extends URLClassLoader {
 
     private void debugClassLoading(String phase, String className) {
         if (logger.isDebugEnabled())
-            logger.debug("Module-Loader", (new StringBuilder()).append("{} try ").append(phase).append(": {}").toString(), new Object[]{
+            logger.debug("Module-Loader " + new StringBuilder().append("{} try ").append(phase).append(": {}").toString(), new Object[]{
                     moduleName, className
             });
     }
@@ -236,7 +240,7 @@ public class ModuleClassLoader extends URLClassLoader {
         if (clazz.getProtectionDomain() != null && clazz.getProtectionDomain().getCodeSource() != null && clazz.getProtectionDomain().getCodeSource().getLocation() != null)
             position = clazz.getProtectionDomain().getCodeSource().getLocation().toString();
         if (logger.isDebugEnabled())
-            logger.debug("Module-Loader", "{} loaded class: {} @ {} at {} phase", new Object[]{
+            logger.debug("Module-Loader {} loaded class: {} @ {} at {} phase", new Object[]{
                     moduleName, className, position, phase
             });
     }

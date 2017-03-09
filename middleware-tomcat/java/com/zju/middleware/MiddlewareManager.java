@@ -21,6 +21,7 @@ import java.util.*;
  */
 public class MiddlewareManager extends LifecycleMBeanBase {
 
+    private static final org.apache.juli.logging.Log log = org.apache.juli.logging.LogFactory.getLog(MiddlewareManager.class);
     private StandardContext context;
     private ExportClassRepository exportClassRepository;
     private Class containerClass;
@@ -40,12 +41,12 @@ public class MiddlewareManager extends LifecycleMBeanBase {
         // containerDir:deploy/container.sar
         File containerDir = new File(System.getProperty("catalina.base"), "deploy/container.sar");
         if (!containerDir.exists()) {
-            System.out.println("Couldn't find pandora.sar directory, therefore will not init pandora container");
+            log.error("Couldn't find container.sar directory, therefore will not init container");
             return;
         }
-        System.out.println((new StringBuilder()).append("Initializing pandora container: ").append(containerDir).toString());
+        log.info((new StringBuilder()).append("Initializing container: ").append(containerDir).toString());
         try {
-            // containerLoader cover pandora jars ...
+            // containerLoader cover container jars ...
             //containerLoader:deploy/container.sar/lib
             URLClassLoader containerLoader = getContainerLoader(containerDir);
             String containerClassName = "com.zju.middleware.container.MiddlewareDelegateContainer";
@@ -53,21 +54,17 @@ public class MiddlewareManager extends LifecycleMBeanBase {
             if (containerClass == null) {
                 throw new ClassNotFoundException(containerClassName);
             } else {
-                String dirs[] = {
-                        containerDir.getCanonicalPath()
-                };
-                containerClass.getMethod("start", new Class[]{String[].class}).invoke(null, new Object[]{
-                        dirs
-                });
+                containerClass.getMethod("start", (Class[]) null).invoke(null, (Object[]) null);
             }
         } catch (Exception e) {
-            throw new LifecycleException((new StringBuilder()).append("Failed to init Pandora container: ").append(containerDir).toString(), e);
+            throw new LifecycleException((new StringBuilder()).append("Failed to init container: ").append(containerDir).toString(), e);
         }
-        System.out.println("Pandora container initialized.");
+        log.info("container initialized.");
     }
 
     /**
-     * classloader：负责加载deploy/taobao-hsf.sar/lib下各个jar中的类
+     * classloader：负责加载deploy/container.sar/lib下各个jar中的类
+     *
      * @param containerDir
      * @return
      * @throws MalformedURLException
@@ -76,7 +73,7 @@ public class MiddlewareManager extends LifecycleMBeanBase {
             throws MalformedURLException {
         ArrayList list = new ArrayList();
         // there are pandora related jars in containerDir, which is 'deploy/container.sar'
-        // deploy/taobao-hsf.sar/lib contains pandora related libs
+        // deploy/container.sar/lib contains container related libs
         File lib = new File(containerDir, "lib");
         File[] containerLibs = lib.listFiles(new FilenameFilter() {
             @Override
@@ -84,7 +81,7 @@ public class MiddlewareManager extends LifecycleMBeanBase {
                 return name.endsWith(".jar");
             }
         });
-        for (File jarFile : containerLibs){
+        for (File jarFile : containerLibs) {
             list.add(jarFile.toURI().toURL());
         }
 
@@ -105,29 +102,26 @@ public class MiddlewareManager extends LifecycleMBeanBase {
         exportClassRepository = new ExportClassRepository();
         classLoader.setExportClassRepository(exportClassRepository);
         try {
-            System.out.println("Starting pandora container.");
+            log.info("Starting container.");
             export(classLoader);
         } catch (Exception e) {
-            throw new ContainerException("Failed to start Pandora container.", e);
+            throw new ContainerException("Failed to start container.", e);
         }
-        System.out.println("Pandora container started.");
+        log.info("container started.");
         addRepository(loader, context.getRealPath(""));
         setState(LifecycleState.STARTING);
     }
 
     private void export(ClassLoader appClassLoader)
             throws Exception {
-        // where did containerClass inited ???
-        // default containerClassName is "com.taobao.pandora.delegator.PandoraDelegator";
-        // in V2, it is com/taobao/hsf/container/HSFContainer.class ...
-
+        //containerClass:com.zju.middleware.container.MiddlewareDelegateContainer
         containerClass.getMethod("setThirdContainerClassLoader", new Class[]{
                 ClassLoader.class
         }).invoke(null, new Object[]{
                 appClassLoader
         });
         Method method = containerClass.getMethod("getExportedClasses", (Class[]) null);
-        //key：modelClassName,value:modelClass，中间件暴露给业务的api类
+        //key：exportClassName,value:exportClass，中间件暴露给业务的api类
         final Map exported = (Map) method.invoke(null, (Object[]) null);
         exportClassRepository.setMiddlewareRepoAccessor(exported);
     }
@@ -145,11 +139,11 @@ public class MiddlewareManager extends LifecycleMBeanBase {
     @Override
     protected void stopInternal() throws LifecycleException {
         File containerDir = new File(System.getProperty("catalina.base"), "deploy/container.sar");
-        System.out.println((new StringBuilder()).append("Stopping pandora container: ").append(containerDir).toString());
+        log.info((new StringBuilder()).append("Stopping container: ").append(containerDir).toString());
         try {
             containerClass.getMethod("stop", new Class[0]).invoke(null, new Object[0]);
         } catch (Exception e) {
-            throw new LifecycleException((new StringBuilder()).append("Failed to stop pandora container: ").append(containerDir).toString(), e);
+            throw new LifecycleException((new StringBuilder()).append("Failed to stop container: ").append(containerDir).toString(), e);
         }
         setState(LifecycleState.STOPPING);
     }

@@ -2,8 +2,7 @@
 
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!--<fileNamePattern>logs/metabase-console%d{yyyy-MM-dd}.log</fileNamePattern>-->
-			<fileNamePattern>logs/container%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>logs/web%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory>
 		</rollingPolicy>
 		<encoder>
@@ -18,7 +17,7 @@
 		</encoder>
 	</appender>
 
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
