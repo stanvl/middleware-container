@@ -39,7 +39,7 @@ public class ModuleClassLoader extends URLClassLoader {
             debugClassLoaded(clazz, "resolveBootstrap", name);
             return clazz;
         }
-        clazz = resolvePandoraClass(name);
+        clazz = resolveContainerClass(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolvePandoraClass", name);
             return clazz;
@@ -61,8 +61,6 @@ public class ModuleClassLoader extends URLClassLoader {
             debugClassLoaded(clazz, "resolveClassPath", name);
             return clazz;
         }
-        if (name.startsWith("groovy.runtime.metaclass"))
-            throw new FrameworkException((new StringBuilder()).append("[Module-Loader] ").append(moduleName).append(": fail to load groovy class ").append(name).append(" due to HSF's limitation.").toString());
         clazz = resolveExternal(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveExternal", name);
@@ -181,16 +179,16 @@ public class ModuleClassLoader extends URLClassLoader {
         return null;
     }
 
-    //加载pandora的类
-    Class resolvePandoraClass(String name)
+    //加载container的类
+    Class resolveContainerClass(String name)
             throws FrameworkException {
-        if (containerClassLoader != null && name.startsWith("com.taobao.pandora")) {
-            debugClassLoading("resolvePandoraClass", name);
+        if (containerClassLoader != null && name.startsWith("com.zju.middleware.container")) {
+            debugClassLoading("resolveContainerClass", name);
             try {
                 return containerClassLoader.loadClass(name);
             } catch (ClassNotFoundException e) {
             } catch (Throwable t) {
-                throwClassLoadError(name, "resolvePandoraClass", t);
+                throwClassLoadError(name, "resolveContainerClass", t);
             }
         }
         return null;

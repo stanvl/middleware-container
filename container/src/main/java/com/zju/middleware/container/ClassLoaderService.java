@@ -14,10 +14,10 @@ public class ClassLoaderService {
 
     private ClassLoaderService() {
         systemClassLoader = ClassLoader.getSystemClassLoader();
-        ClassLoader j = String.class.getClassLoader();
-        if (j == null)
-            for (j = systemClassLoader; j.getParent() != null; j = j.getParent()) ;
-        extClassLoader = j;
+        ClassLoader classLoader = String.class.getClassLoader();
+        if (classLoader == null)
+            for (classLoader = systemClassLoader; classLoader.getParent() != null; classLoader = classLoader.getParent()) ;
+        extClassLoader = classLoader;
         containerClassLoader = getClass().getClassLoader();
     }
 

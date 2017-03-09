@@ -61,10 +61,6 @@ public class DeployService {
                     try {
                         Class clazz = classLoader.loadClass(className);
                         SharedClassService.INSTANCE.putIfAbsent(moduleName, clazz);
-                        if (logger.isDebugEnabled())
-                            logger.debug("ClassExporter", moduleName, new Object[]{
-                                    "export class: {}", className
-                            });
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }

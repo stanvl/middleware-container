@@ -7,8 +7,6 @@ import java.util.Map;
  * @date 2017-03-08 16:22
  */
 public class MiddlewareDelegateContainer {
-    public MiddlewareDelegateContainer() {
-    }
 
     public static void init(String args[]) throws Exception {
         if (args == null || args.length == 0)
@@ -16,7 +14,7 @@ public class MiddlewareDelegateContainer {
         else
             path = args[0];
         if (path == null) {
-            throw new Exception("[Pandora-Delegate-Container] Container start error for can not get container path");
+            throw new Exception("[Middleware-Delegate-Container] Container start error for can not get container path");
         } else {
             init = true;
             return;
@@ -34,7 +32,7 @@ public class MiddlewareDelegateContainer {
         if (middlewareContainer != null)
             middlewareContainer.stop();
         else
-            throw new Exception("[Pandora-Delegate-Container] Container not initialized while stop is called.");
+            throw new Exception("[Middleware-Delegate-Container] Container not initialized while stop is called.");
     }
 
     public static Map getExportedClasses() {

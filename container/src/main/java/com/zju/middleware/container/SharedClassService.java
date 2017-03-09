@@ -15,47 +15,25 @@ public class SharedClassService {
     private SharedClassService() {
         //key：exportClassName,value:exportClass
         cachedClasses = new ConcurrentHashMap();
-        //key：modelName,value:exportClassList
-        moduleCachedModel = new HashMap();
     }
 
     public Map getSharedClassMap() {
         return Collections.unmodifiableMap(cachedClasses);
     }
 
-    public int getSharedClassCount() {
-        return cachedClasses.size();
-    }
-
     public Class getClass(String fullClassName) {
         Class result = null;
         if (fullClassName != null)
-            result = (Class) cachedClasses.get(fullClassName);
+            result = cachedClasses.get(fullClassName);
         return result;
     }
 
     public Class putIfAbsent(String moduleName, Class clazz) {
         if (moduleName == null || clazz == null)
             return null;
-        Class oldClazz = (Class) cachedClasses.putIfAbsent(clazz.getName(), clazz);
-        if (oldClazz == null) {
-            List moduleClassList = (List) moduleCachedModel.get(moduleName);
-            if (moduleClassList == null) {
-                moduleClassList = new ArrayList();
-                moduleCachedModel.put(moduleName, moduleClassList);
-            }
-            moduleClassList.add(clazz);
-        }
+        Class oldClazz = cachedClasses.putIfAbsent(clazz.getName(), clazz);
         return oldClazz;
     }
 
-    public List getSharedClassList(String moduleName) {
-        List classList = Collections.emptyList();
-        if (moduleName != null && moduleCachedModel.get(moduleName) != null)
-            classList = Collections.unmodifiableList((List) moduleCachedModel.get(moduleName));
-        return classList;
-    }
-
-    private ConcurrentHashMap cachedClasses;
-    private Map moduleCachedModel;
+    private ConcurrentHashMap<String, Class> cachedClasses;
 }

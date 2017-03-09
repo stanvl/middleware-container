@@ -7,7 +7,6 @@ import org.apache.catalina.Loader;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.loader.WebappLoader;
 import org.apache.catalina.util.LifecycleMBeanBase;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.Method;
