@@ -59,7 +59,7 @@ public class DeployService {
         }
         //构建每个中间件单独的classloader
         ModuleClassLoader classLoader = ClassLoaderService.INSTANCE.createModuleClassLoader(moduleName, urls, importPackages, exportJar);
-        if (logger.isDebugEnabled()){
+        /*if (logger.isDebugEnabled()){
             ClassLoader classLoader1 = classLoader;
             logger.info("ModuleClassLoader start!");
             while(classLoader1 != null){
@@ -67,7 +67,7 @@ public class DeployService {
                 classLoader1 = classLoader1.getParent();
             }
             logger.info("ModuleClassLoader end!");
-        }
+        }*/
         try {
             JarFile jarFile = new JarFile(exportJar);
             Enumeration entries = jarFile.entries();

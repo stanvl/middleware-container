@@ -50,13 +50,13 @@ public class MiddlewareManager extends LifecycleMBeanBase {
             //containerLoader:deploy/container.sar/lib
             URLClassLoader containerLoader = getContainerLoader(containerDir);
 
-            ClassLoader classLoader1 = containerLoader;
+            /*ClassLoader classLoader1 = containerLoader;
             log.info("containerLoader start!");
             while(classLoader1 != null){
                 log.info(classLoader1);
                 classLoader1 = classLoader1.getParent();
             }
-            log.info("containerLoader end!");
+            log.info("containerLoader end!");*/
 
             String containerClassName = "com.zju.middleware.container.MiddlewareDelegateContainer";
             containerClass = containerLoader.loadClass(containerClassName);
@@ -108,13 +108,13 @@ public class MiddlewareManager extends LifecycleMBeanBase {
         WebappLoader loader = (WebappLoader) context.getLoader();
         MiddlewareWebappClassLoader classLoader = (MiddlewareWebappClassLoader) loader.getClassLoader();
 
-        ClassLoader classLoader1 = classLoader;
+        /*ClassLoader classLoader1 = classLoader;
         log.info("MiddlewareWebappClassLoader start!");
         while(classLoader1 != null){
             log.info(classLoader1);
             classLoader1 = classLoader1.getParent();
         }
-        log.info("MiddlewareWebappClassLoader end!");
+        log.info("MiddlewareWebappClassLoader end!");*/
 
         //key：exportClassName,value:exportClass
         exportClassRepository = new ExportClassRepository();
