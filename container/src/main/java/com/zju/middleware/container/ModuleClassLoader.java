@@ -28,42 +28,43 @@ public class ModuleClassLoader extends URLClassLoader {
             throws ClassNotFoundException {
         if (StringUtils.isEmpty(name))
             throw new FrameworkException("class name is blank.");
-        //加载中间件及其依赖的类库
+        //加载中间件及其依赖的类库,${CATALINA_HOME}/deploy/container.sar/plugins/${middleware}/lib
         Class clazz = resolveLoaded(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveLoaded", name);
             return clazz;
         }
-        //扩展类和跟加载器加载
+        //扩展类和跟加载器加载,$JAVA_HOME/jre/lib/ext/*
         clazz = resolveBootstrap(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveBootstrap", name);
             return clazz;
         }
-        //加载容器类
+        //加载容器类,${CATALINA_HOME}/deploy/container.sar/lib
         clazz = resolveContainerClass(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveContainerClass", name);
             return clazz;
         }
-        //中间件暴露出的api类
+        //中间件暴露出的api类,sharedClassService,所有${CATALINA_HOME}/deploy/container.sar/plugins/*/conf/export.properties中设置的jar包中的类
         clazz = resolveShared(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveShared", name);
             return clazz;
         }
-        //即便是中间件，可能也会依赖spring、servlet这些类库，这些类库通过import定义在中间件配置文件中，然后由bizClassLoader加载
+        //即便是中间件，可能也会依赖spring、servlet这些类库，这些类库通过import.properties定义在中间件配置文件中，然后由bizClassLoader加载，即${CATALINA_HOME}/deploy/container.sar/plugins/${middleware}/conf/import.properties中定义的包且在${CATALINA_HOME}/webapps/${app}/WEB-INF/classes/*和${CATALINA_HOME}/webapps/${app}/WEB-INF/lib/*中可以加载到的类
         clazz = resolveImport(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveImport", name);
             return clazz;
         }
+        //tomcat的classpath中的类，即$CATALINA_HOME/bin/bootstrap.jar、$CATALINA_HOME/bin/tomcat-juli.jar
         clazz = resolveClassPath(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveClassPath", name);
             return clazz;
         }
-        //从业务类加载
+        //从业务类加载器加载，即${CATALINA_HOME}/webapps/${app}/WEB-INF/classes/*和${CATALINA_HOME}/webapps/${app}/WEB-INF/lib/*中的类
         clazz = resolveExternal(name);
         if (clazz != null) {
             debugClassLoaded(clazz, "resolveExternal", name);
