@@ -16,6 +16,10 @@ public class MiddlewareContainer {
         ClassLoaderHolder.setBizLoader(bizClassLoader);
     }
 
+    /**
+     * 部署每个中间件
+     * @throws Exception
+     */
     public void start() throws Exception {
         if (started.compareAndSet(false, true)) {
             //部署每个中间件plugin，创建每个中间件的classloader,把每个中间件暴露出的类解析到SharedClassService
@@ -33,6 +37,10 @@ public class MiddlewareContainer {
         ClassLoaderHolder.cleanup();
     }
 
+    /**
+     * 获取所有中间件暴露出去的类
+     * @return
+     */
     public Map getExportedClasses() {
         //key：exportClassName,value:exportClass
         return SharedClassService.INSTANCE.getSharedClassMap();

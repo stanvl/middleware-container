@@ -49,6 +49,15 @@ public class MiddlewareManager extends LifecycleMBeanBase {
             // containerLoader cover container jars ...
             //containerLoader:deploy/container.sar/lib
             URLClassLoader containerLoader = getContainerLoader(containerDir);
+
+            ClassLoader classLoader1 = containerLoader;
+            log.info("containerLoader start!");
+            while(classLoader1 != null){
+                log.info(classLoader1);
+                classLoader1 = classLoader1.getParent();
+            }
+            log.info("containerLoader end!");
+
             String containerClassName = "com.zju.middleware.container.MiddlewareDelegateContainer";
             containerClass = containerLoader.loadClass(containerClassName);
             if (containerClass == null) {
@@ -98,6 +107,15 @@ public class MiddlewareManager extends LifecycleMBeanBase {
     protected void startInternal() throws LifecycleException {
         WebappLoader loader = (WebappLoader) context.getLoader();
         MiddlewareWebappClassLoader classLoader = (MiddlewareWebappClassLoader) loader.getClassLoader();
+
+        ClassLoader classLoader1 = classLoader;
+        log.info("MiddlewareWebappClassLoader start!");
+        while(classLoader1 != null){
+            log.info(classLoader1);
+            classLoader1 = classLoader1.getParent();
+        }
+        log.info("MiddlewareWebappClassLoader end!");
+
         //key：exportClassName,value:exportClass
         exportClassRepository = new ExportClassRepository();
         classLoader.setExportClassRepository(exportClassRepository);
@@ -108,10 +126,16 @@ public class MiddlewareManager extends LifecycleMBeanBase {
             throw new ContainerException("Failed to start container.", e);
         }
         log.info("container started.");
-        addRepository(loader, context.getRealPath(""));
+        //addRepository(loader, context.getRealPath(""));
         setState(LifecycleState.STARTING);
     }
 
+    /**
+     * 将MiddlewareWebappClassLoader设置到MiddlewareDelegateContainer，进而交给MiddlewareContainer，
+     * 最终会交给每个中间件的classloader(ModuleClassLoader).
+     * 然后通过MiddlewareDelegateContainer拿到所有中间件暴露出来的类，放到exportClassRepository中，
+     * 注意：每个中间件暴露出来的类都是由该中间件的ModuleClassLoader加载的。
+     */
     private void export(ClassLoader appClassLoader)
             throws Exception {
         //containerClass:com.zju.middleware.container.MiddlewareDelegateContainer
@@ -126,6 +150,7 @@ public class MiddlewareManager extends LifecycleMBeanBase {
         exportClassRepository.setMiddlewareRepoAccessor(exported);
     }
 
+    //这里貌似没用，不知道WebappLoader的repository有啥用
     private void addRepository(Loader loader, String webRoot) {
         if (webRoot == null)
             return;

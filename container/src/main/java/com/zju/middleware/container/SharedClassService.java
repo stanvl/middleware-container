@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SharedClassService {
     public static final SharedClassService INSTANCE = new SharedClassService();
     /**
-     * 当tomcat采用AliWebappClassLoader加载一个中间件暴露的api类时，会通过api类名modelClassName在cachedClasses找到api类
+     * 当tomcat采用AliWebappClassLoader加载一个中间件暴露的api类时，会通过api类名exportClassName在cachedClasses找到api类
      */
     private SharedClassService() {
         //key：exportClassName,value:exportClass

@@ -20,6 +20,10 @@ public class MiddlewareDelegateContainer {
             throw new Exception("[Middleware-Delegate-Container] Container not initialized while stop is called.");
     }
 
+    /**
+     * 获取所有中间件暴露出去的类
+     * @return
+     */
     public static Map getExportedClasses() {
         middlewareContainer = new MiddlewareContainer(ClassLoaderHolder.getBizLoader());
         try {
@@ -31,8 +35,8 @@ public class MiddlewareDelegateContainer {
     }
 
     /**
-     * 在tomcat的StandardContext.startInternal中初始化PandoraManager,
-     * 然后在PandoraManager中通过反射执行HSFContainer.setThirdContainerClassLoader方法将appClassLoader设置进去，
+     * 在tomcat的StandardContext.startInternal中初始化MiddlewareManager,
+     * 然后在MiddlewareManager中通过反射执行MiddlewareDelegateContainer.setThirdContainerClassLoader方法将MiddlewareWebappClassLoader设置进去，
      * 然后再调用getExportedClasses方法将中间件暴露给业务的api类放到sharedRepository中
      *
      * @param clzLoader
